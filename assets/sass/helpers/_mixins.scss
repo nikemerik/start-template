@@ -49,7 +49,7 @@
 		visibility: hidden;
 	}
 }
-@mixin bp($width,$direction:min) {
+@mixin bp($width,$direction:max) {
 	@if $direction == min {
 		@media screen and (min-width: $width) {
 			@content;

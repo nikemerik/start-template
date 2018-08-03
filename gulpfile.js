@@ -1,7 +1,6 @@
 //Инициализация зависимостей
 var gulp 					= require('gulp'),
 	sass 					= require('gulp-sass'),
-	pug	 					= require('gulp-pug'),
 	browserSync 			= require('browser-sync'),
 	dirSync 				= require('gulp-directory-sync'),
 	concat 					= require('gulp-concat'),
@@ -11,8 +10,12 @@ var gulp 					= require('gulp'),
 	plumber 				= require('gulp-plumber'),
 	purify 					= require('gulp-purifycss'),
 	uglify 					= require('gulp-uglify'),
+	fs						= require('fs');
 	pngquant 				= require('imagemin-pngquant'),
 	rimraf 					= require('rimraf');
+	nunjucksRender			= require('gulp-nunjucks-render');
+	data 					= require('gulp-data');
+	path					= require('path');
 
 //Инициализация путей
 var assetsDir = 'assets/';
@@ -20,15 +23,18 @@ var outputDir = 'dist/';
 var buildDir = 'build/';
 
 
-//Такс для Pug
-gulp.task('pug', function () {
-	gulp.src([assetsDir + 'pug/*.pug', '!' + assetsDir + 'pug/_*.pug'])//берем файлы
-		.pipe(plumber())
-		.pipe(pug({pretty:true}))
+//Такс для Nunjucks
+gulp.task ('nunjucks', function() {
+	gulp.src(assetsDir + 'nunjucks/**/*.+(html|nunjucks)')
+		.pipe(data(function() { 
+			return JSON.parse(fs.readFileSync('./data.json'));
+	   	}))
+		.pipe(nunjucksRender({
+			path: [assetsDir+'nunjucks/template/']
+		}))
 		.pipe(gulp.dest(outputDir))
 		.pipe(browserSync.stream());
 });
-
 //Sass компиляция
 gulp.task('sass', function () {
 	gulp.src([assetsDir + 'sass/**/*.scss', '!' + assetsDir + 'sass/**/_*.scss'])
@@ -76,10 +82,10 @@ gulp.task('jsSync', function () {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(assetsDir + 'pug/**/*.pug', ['pug']);
+	gulp.watch(assetsDir + 'nunjucks/**/*.nunjucks', ['nunjucks']);
 	gulp.watch(assetsDir + 'sass/**/*.scss', ['sass']);
 	gulp.watch(assetsDir + 'js/**/*.js', ['jsSync']);
-	gulp.watch(assetsDir + 'js/all/**/*.js', ['jsConcat']);
+	gulp.watch(assetsDir + 'js/**/*.js', ['jsConcat']);
 	gulp.watch(assetsDir + 'i/**/*', ['imageSync']);
 	gulp.watch(assetsDir + 'fonts/**/*', ['fontsSync']);
 });
@@ -125,7 +131,7 @@ gulp.task('htmlBuild', function () {
 
 //copy and minify js
 gulp.task('jsBuild', function () {
-	return gulp.src(outputDir + 'js/**/*')
+	return gulp.src(outputDir + 'js/scripts.js')
 		.pipe(uglify())
 		.pipe(gulp.dest(buildDir + 'js/'))
 });
@@ -138,7 +144,7 @@ gulp.task('cssBuild', function () {
 		.pipe(gulp.dest(buildDir + 'styles/'))
 });
 
-gulp.task('default', ['pug', 'sass', 'imageSync', 'fontsSync', 'jsConcat', 'jsSync', 'watch', 'browser-sync']);
+gulp.task('default', ['nunjucks', 'sass', 'imageSync', 'fontsSync', 'jsConcat', 'jsSync', 'watch', 'browser-sync']);
 
 gulp.task('build', ['cleanBuildDir'], function () {
 	gulp.start('imgBuild', 'fontsBuild', 'htmlBuild', 'jsBuild', 'cssBuild');

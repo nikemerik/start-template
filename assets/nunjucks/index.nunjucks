@@ -1,0 +1,6 @@
+{% extends "components/layout.nunjucks" %}
+    {% block content %}
+        {% include "partials/header.nunjucks" %}
+            <h1>{{title}}</h1>
+        {% include "partials/footer.nunjucks" %}
+    {% endblock %}
