@@ -1,8 +1,8 @@
 //Инициализация зависимостей
 var gulp 					= require('gulp'),
-	sass 					= require('gulp-sass'),
-	browserSync 			= require('browser-sync'),
-	dirSync 				= require('gulp-directory-sync'),
+	sass					= require('gulp-sass'),
+	browserSync				= require('browser-sync'),
+	dirSync					= require('gulp-directory-sync'),
 	concat 					= require('gulp-concat'),
 	prefix 					= require('gulp-autoprefixer'),
 	csso 					= require('gulp-csso'),
@@ -17,13 +17,13 @@ var gulp 					= require('gulp'),
 	data 					= require('gulp-data');
 	path					= require('path');
 
-//Инициализация путей
+//Initializing paths
 var assetsDir = 'assets/';
 var outputDir = 'dist/';
 var buildDir = 'build/';
 
 
-//Такс для Nunjucks
+//Initializing task for Nunjucks
 gulp.task ('nunjucks', function() {
 	gulp.src(assetsDir + 'nunjucks/**/*.+(html|nunjucks)')
 		.pipe(data(function() { 
@@ -35,7 +35,7 @@ gulp.task ('nunjucks', function() {
 		.pipe(gulp.dest(outputDir))
 		.pipe(browserSync.stream());
 });
-//Sass компиляция
+//Sass compile
 gulp.task('sass', function () {
 	gulp.src([assetsDir + 'sass/**/*.scss', '!' + assetsDir + 'sass/**/_*.scss'])
 		.pipe(plumber())
@@ -45,7 +45,7 @@ gulp.task('sass', function () {
 		.pipe(browserSync.stream());
 });
 
-//Конкатинация скриптов в 1
+//concatinate all scripts to one
 gulp.task('jsConcat', function () {
 	return gulp.src([
 		assetsDir + 'js/jquery.js',
@@ -56,7 +56,7 @@ gulp.task('jsConcat', function () {
 		.pipe(browserSync.stream());
 });
 
-//Синхронизирования папок картинок
+//Sync folders with image
 gulp.task('imageSync', function () {
 	return gulp.src('')
 		.pipe(plumber())
@@ -65,7 +65,7 @@ gulp.task('imageSync', function () {
 });
 
 
-//Синхронизирование папок с шрифтами 
+//Sync folders with fonts 
 gulp.task('fontsSync', function () {
 	return gulp.src('')
 		.pipe(plumber())
@@ -73,7 +73,7 @@ gulp.task('fontsSync', function () {
 		.pipe(browserSync.stream());
 });
 
-//Синхронизация папок с скриптами
+//Sync scripts
 gulp.task('jsSync', function () {
 	return gulp.src(assetsDir + 'js/*.js')
 		.pipe(plumber())
@@ -81,6 +81,7 @@ gulp.task('jsSync', function () {
 		.pipe(browserSync.stream());
 });
 
+//Watch task's
 gulp.task('watch', function () {
 	gulp.watch(assetsDir + 'nunjucks/**/*.nunjucks', ['nunjucks']);
 	gulp.watch(assetsDir + 'sass/**/*.scss', ['sass']);
@@ -144,8 +145,10 @@ gulp.task('cssBuild', function () {
 		.pipe(gulp.dest(buildDir + 'styles/'))
 });
 
+//default task
 gulp.task('default', ['nunjucks', 'sass', 'imageSync', 'fontsSync', 'jsConcat', 'jsSync', 'watch', 'browser-sync']);
 
+//build task
 gulp.task('build', ['cleanBuildDir'], function () {
 	gulp.start('imgBuild', 'fontsBuild', 'htmlBuild', 'jsBuild', 'cssBuild');
 });
