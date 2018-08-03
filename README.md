@@ -1,6 +1,6 @@
 # Installation
 ```sh
-$ npm i -g gulp cli
+$ npm i -g gulp-cli
 ```
 ```sh
 $ npm i
